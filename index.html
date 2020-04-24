@@ -1,0 +1,170 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet/less" type="text/css" href="styles.less" />
+    <link rel="stylesheet/less" type="text/css" href="mystyles.css" />
+    <script>less = { env: 'development'};</script>
+    <script src="less.js"></script>
+    <!-- <script>less.watch();</script> -->
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+ 
+    </head>
+    <body>
+        <div class="container">
+            <div class="row" id="data-row">
+
+            </div>
+        </div>
+        <!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+  
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Modal Header</h4>
+        </div>
+        <div class="modal-body">
+          <p>Some text in the modal.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+  
+    </div>
+  </div>
+        <script>
+            let file = "data.json";
+            var httpRequest = new XMLHttpRequest();
+            httpRequest.overrideMimeType("application/json");
+            httpRequest.open("GET",file, true);
+            httpRequest.onreadystatechange = function(){
+                if(httpRequest.readyState == 4 && httpRequest.status == "200"){
+                    procesdData(httpRequest.responseText);
+                }
+            }
+            httpRequest.send();
+            let procesdData = function(data) {
+                var london = "london"
+                var htmlData = '';
+                var jsonObject = JSON.parse(data);
+                for(key in jsonObject){
+                    if(jsonObject.hasOwnProperty(key)){
+                        
+                        let email = jsonObject[key].contactpoint_hasemail;
+                        let contactEmail = email.split("mailto:").pop();
+                        
+
+                        //console.log(title);
+                        htmlData += '<div class="col-lg-6 col-md-3 col-sm-3 col-xs-4 bhanopa-tab-container">\
+                                                <div class="col-lg-4 col-md-3 col-sm-3 col-xs-4 bhanopa-tab-menu">\
+                                                <div class="list-group" id="main-container-'+key+'">\
+                                                    <a href="#" class="list-group-item active text-center">\
+                                                        Title\
+                                                    </a>\
+                                                    <a href="#" class="list-group-item text-center">\
+                                                        Access level\
+                                                    </a>\
+                                                    <a href="#" class="list-group-item text-center">\
+                                                        Contact Point\
+                                                    </a>\
+                                                    <a href="#" class="list-group-item text-center">\
+                                                        Email\
+                                                    </a>\
+                                                    <a href="#" class="list-group-item text-center">\
+                                                        Description\
+                                                    </a>\
+                                                    <a href="#" class="list-group-item  text-center">\
+                                                        Identifier\
+                                                    </a>\
+                                                    <a href="#" class="list-group-item text-center">\
+                                                        Modified Date\
+                                                    </a>\
+                                                    <a href="#" class="list-group-item text-center">\
+                                                        Publisher Name\
+                                                    </a>\
+                                                </div>\
+                                                </div>\
+                                                <div class="col-lg-8 col-md-4 col-sm-4 col-xs-4 bhanopa-tab" id="bhanopa-tab-'+key+'">\
+                                                    <!-- flight section -->\
+                                                    <div class="bhanopa-tab-content active">\
+                                                        '+jsonObject[key].title+'\
+                                                    </div>\
+                                                    <!-- train section -->\
+                                                    <div class="bhanopa-tab-content">\
+                                                            <h3 style="margin-top: 0;color:#55518a">'+jsonObject[key].accesslevel+'</h3>\
+                                                    </div>\
+                                                    <!-- hotel search -->\
+                                                    <div class="bhanopa-tab-content">\
+                                                        <center>\
+                                                            <h3>'+jsonObject[key].contactpoint_fn+'</h3>\
+                                                        </center>\
+                                                    </div>\
+                                                    <div class="bhanopa-tab-content">\
+                                                        <center>\
+                                                            <h3 style="margin-top: 0;color:#55518a">'+contactEmail+'</h3>\
+                                                        </center>\
+                                                    </div>\
+                                                    <div class="bhanopa-tab-content">\
+                                                        \
+                                                            '+truncateText(jsonObject[key].description,700,'</br> <button class="btn btn-primary"  id="'+key+'" data-toggle="modal" data-target="#myModal"> Read More</button>')+'\
+                                                        \
+                                                    </div>\
+                                                    <div class="bhanopa-tab-content ">\
+                                                        '+jsonObject[key].identifier+'\
+                                                    </div>\
+                                                    <!-- train section -->\
+                                                    <div class="bhanopa-tab-content">\
+                                                        <center>\
+                                                            <h3 style="margin-top: 0;color:#55518a"> '+new Date(jsonObject[key].modified)+'</h3>\
+                                                        </center>\
+                                                    </div>\
+                                                    <!-- hotel search -->\
+                                                    <div class="bhanopa-tab-content">\
+                                                        <center>\
+                                                            <h3 style="margin-top: 0;color:#55518a">'+jsonObject[key].publisher_name+'</h3>\
+                                                        </center>\
+                                                    </div>\
+                                                </div>\
+                                            </div>';
+                    }
+                      //console.log(jsonObject[key]);
+                    }
+                    var mainDiv = document.getElementById("grid-row");
+                    $("#data-row").html(htmlData);
+                   
+            }
+
+            let truncateText = function(str, length = 50 , end = "...") {
+                if(str.length > length){
+                    return str.substring(0, length - end.length) + end ;
+                } else {
+                    return str;
+                }
+            }
+
+            $(document).ready(function() {
+                $("body").on("click", "div.bhanopa-tab-menu>div.list-group>a", function(event){
+                    event.preventDefault();
+                    let currentElement = $(this).parent().attr("id");
+                    let listArray = currentElement.split("-");
+                    let id = listArray.pop();
+                    $(this).siblings('a.active').removeClass("active");
+                    $(this).addClass("active");
+                    var index = $(this).index();
+                    $("div#bhanopa-tab-"+id+">div.bhanopa-tab-content").removeClass("active");
+                    $("div#bhanopa-tab-"+id+">div.bhanopa-tab-content").eq(index).addClass("active");
+                });
+
+               
+            });
+// Get the element with id="defaultOpen" and click on it
+//document.getElementById("0").click();
+        </script>
+     </body>
+    </html>
